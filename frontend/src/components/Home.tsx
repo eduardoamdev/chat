@@ -3,6 +3,11 @@ import { Navigate } from "react-router-dom";
 import { SocketContext } from "../context/socket";
 import { rooms } from "../resources/rooms";
 
+interface SuccessInfoResponse {
+  success: boolean;
+  message: string;
+}
+
 const Home = () => {
   const socket = useContext(SocketContext);
 
@@ -35,7 +40,7 @@ const Home = () => {
   };
 
   const handleSubmit = () => {
-    if (username.username !== "" && room.room !== "") {
+    if (username.username !== "") {
       socket.emit(
         "joinRoom",
         { name: username.username, room: room.room },
@@ -47,7 +52,7 @@ const Home = () => {
       );
     } else {
       setMessage({
-        message: "Rellena la información correctamente",
+        message: "Fill the field properly.",
       });
     }
   };
@@ -58,14 +63,16 @@ const Home = () => {
         <Navigate to={`/room/${room.room}`} />
       ) : (
         <div>
-          <h1>Welcome to "el Chat de Terra"</h1>
+          <h1>Welcome to "El Chat de Terra"</h1>
           <input onChange={handleInput} />
           <select onChange={handleSelect}>
-            {
-              rooms.map((room) => {
-                return <option key={room.name} value={room.name}>{room.name}</option>
-              })
-            }
+            {rooms.map((room) => {
+              return (
+                <option key={room.name} value={room.name}>
+                  {room.name}
+                </option>
+              );
+            })}
           </select>
           <button onClick={handleSubmit}>Submit</button>
           <h4>{message.message}</h4>

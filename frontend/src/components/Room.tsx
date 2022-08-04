@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import io from "socket.io-client";
-
-const socket = io("http://localhost:5000");
+import { SocketContext } from "../context/socket";
 
 const Room = () => {
+  const socket = useContext(SocketContext);
+
+  const room  = useParams().id;
+
   let [message, setMessage] = useState({
     content: "",
-  });
-
-  let [room, setRoom] = useState({
-    room: useParams().id,
   });
 
   const handleInput = (event: any) => {
@@ -28,7 +26,11 @@ const Room = () => {
   };
 
   useEffect(() => {
-    socket.on("new-message", (newMessage) => {
+    socket.emit("users")
+    socket.on("users", (users: any) => {
+      console.log(users);
+    })
+    socket.on("newMessage", (newMessage: any) => {
       console.log(newMessage);
     });
   }, []);
@@ -40,7 +42,7 @@ const Room = () => {
         Type your message:
         <input onChange={handleInput} value={message.content} />
       </span>
-      <button onClick={handleSubmit}>Enviar</button>
+      <button onClick={handleSubmit}>Send</button>
     </div>
   );
 };

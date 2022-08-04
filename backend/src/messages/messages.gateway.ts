@@ -8,6 +8,7 @@ import {
 import { MessagesService } from "./messages.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { Server, Socket } from "socket.io";
+import { User } from "./interfaces/user.interface";
 
 @WebSocketGateway(5000, {
   cors: {
@@ -20,21 +21,6 @@ export class MessagesGateway {
 
   constructor(private readonly messagesService: MessagesService) {}
 
-  @SubscribeMessage("createMessage")
-  async create(
-    @MessageBody() createMessageDto: CreateMessageDto,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.server
-      .to(`room_${createMessageDto.room}`)
-      .emit("new_message", createMessageDto.text);
-  }
-
-  /* @SubscribeMessage("findAllMessages")
-  findAll() {
-    return this.messagesService.findAll();
-  } */
-
   @SubscribeMessage("joinRoom")
   joinRoom(
     @MessageBody("name") name: string,
@@ -42,8 +28,31 @@ export class MessagesGateway {
     @ConnectedSocket() client: Socket,
   ) {
     client.join(room);
-    return this.messagesService.identify(name, client.id);
+
+    this.messagesService.identify(client.id, name);
+
+    return { success: true };
   }
+
+  @SubscribeMessage("users")
+  getUsers() {
+    const users: User[] = this.messagesService.getUsers();
+
+    this.server.emit("users", users);
+  }
+
+  @SubscribeMessage("createMessage")
+  async create(
+    @MessageBody() createMessageDto: CreateMessageDto,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.server.emit("newMessage", createMessageDto.text);
+  }
+
+  /* @SubscribeMessage("findAllMessages")
+  findAll() {
+    return this.messagesService.findAll();
+  } */
 
   /* @SubscribeMessage("typing")
   async typing(

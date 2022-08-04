@@ -1,12 +1,31 @@
 import { Injectable } from "@nestjs/common";
-import { CreateMessageDto } from "./dto/create-message.dto";
-import { Message } from "./entities/message.entity";
+import { User } from "./interfaces/user.interface";
 
 @Injectable()
 export class MessagesService {
-  clientToUser = {};
+  users: User[] = [];
 
-  create(createMessageDto: CreateMessageDto, cliendId: string) {
+  messages: {
+    travels: [];
+    literature: [];
+  };
+
+  identify(id: string, name: string) {
+    const newUser: User = {
+      id,
+      name,
+    };
+
+    this.users.push(newUser);
+
+    return this.users;
+  }
+
+  getUsers() {
+    return this.users;
+  }
+
+  /* create(createMessageDto: CreateMessageDto, cliendId: string) {
     const message = {
       name: this.clientToUser[cliendId],
       text: createMessageDto.text,
@@ -14,13 +33,7 @@ export class MessagesService {
     return message;
   }
 
-  identify(name: string, clientId: string) {
-    this.clientToUser[clientId] = name;
-
-    return Object.values(this.clientToUser);
-  }
-
   getClientName(clientId: string) {
     return this.clientToUser[clientId];
-  }
+  } */
 }
