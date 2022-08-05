@@ -6,9 +6,9 @@ import {
   ConnectedSocket,
 } from "@nestjs/websockets";
 import { MessagesService } from "./messages.service";
-import { CreateMessageDto } from "./dto/create-message.dto";
 import { Server, Socket } from "socket.io";
 import { User } from "./interfaces/user.interface";
+import { MessageDto } from "./dtos/message.dto";
 
 @WebSocketGateway(5000, {
   cors: {
@@ -29,38 +29,22 @@ export class MessagesGateway {
   ) {
     client.join(room);
 
-    this.messagesService.identify(client.id, name);
+    this.messagesService.identifyUser(client.id, name, room);
 
     return { success: true };
   }
 
   @SubscribeMessage("users")
-  getUsers() {
-    const users: User[] = this.messagesService.getUsers();
+  getUsers(@MessageBody() room: string) {
+    const users: User[] = this.messagesService.getUsers(room);
 
-    this.server.emit("users", users);
+    this.server.to(room).emit("users", users);
   }
 
   @SubscribeMessage("createMessage")
-  async create(
-    @MessageBody() createMessageDto: CreateMessageDto,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.server.emit("newMessage", createMessageDto.text);
+  async create(@MessageBody() message: MessageDto) {
+    this.messagesService.createMessage(message);
+
+    this.server.to(message.room).emit("newMessage", message.text);
   }
-
-  /* @SubscribeMessage("findAllMessages")
-  findAll() {
-    return this.messagesService.findAll();
-  } */
-
-  /* @SubscribeMessage("typing")
-  async typing(
-    @MessageBody("isTyping") isTyping: boolean,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const name = await this.messagesService.getClientName(client.id);
-
-    this.server.emit("typing", { name, isTyping });
-  } */
 }

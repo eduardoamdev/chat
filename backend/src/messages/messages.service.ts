@@ -1,39 +1,44 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "./interfaces/user.interface";
+import { Message } from "./interfaces/message.interface";
+import { MessageDto } from "./dtos/message.dto";
 
 @Injectable()
 export class MessagesService {
-  users: User[] = [];
+  rooms;
 
-  messages: {
-    travels: [];
-    literature: [];
-  };
+  constructor() {
+    this.rooms = {
+      travels: {
+        users: [],
+        messages: [],
+      },
+      literature: {
+        users: [],
+        messages: [],
+      },
+    };
+  }
 
-  identify(id: string, name: string) {
+  identifyUser(id: string, name: string, room: string) {
     const newUser: User = {
       id,
       name,
     };
 
-    this.users.push(newUser);
-
-    return this.users;
+    this.rooms[room].users.push(newUser);
   }
 
-  getUsers() {
-    return this.users;
+  getUsers(room) {
+    return this.rooms[room].users;
   }
 
-  /* create(createMessageDto: CreateMessageDto, cliendId: string) {
-    const message = {
-      name: this.clientToUser[cliendId],
-      text: createMessageDto.text,
+  createMessage(message: MessageDto) {
+    const newMessage: Message = {
+      name: message.name,
+      text: message.text,
     };
-    return message;
-  }
 
-  getClientName(clientId: string) {
-    return this.clientToUser[clientId];
-  } */
+    this.rooms[message.room].messages.push(newMessage);
+  }
 }

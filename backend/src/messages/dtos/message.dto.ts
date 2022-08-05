@@ -1,4 +1,4 @@
-export class Message {
+export interface MessageDto {
   name: string;
   text: string;
   room: string;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { SocketContext } from "../context/socket";
@@ -5,7 +6,7 @@ import { SocketContext } from "../context/socket";
 const Room = () => {
   const socket = useContext(SocketContext);
 
-  const room  = useParams().id;
+  const room = useParams().id;
 
   let [message, setMessage] = useState({
     content: "",
@@ -26,10 +27,10 @@ const Room = () => {
   };
 
   useEffect(() => {
-    socket.emit("users")
+    socket.emit("users", room);
     socket.on("users", (users: any) => {
       console.log(users);
-    })
+    });
     socket.on("newMessage", (newMessage: any) => {
       console.log(newMessage);
     });
