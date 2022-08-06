@@ -23,7 +23,15 @@ export class MessagesService {
     };
   }
 
-  identifyUser(id: string, name: string, room: string) {
+  getUsers(room: string) {
+    return this.rooms[room].users;
+  }
+
+  getUsername(id) {
+    return this.users.find((user) => user.id === id);
+  }
+
+  joinRoom(id: string, name: string, room: string) {
     const newUser: User = {
       id,
       name,
@@ -32,29 +40,6 @@ export class MessagesService {
     this.users.push(newUser);
 
     this.rooms[room].users.push(newUser);
-  }
-
-  getUsername(id) {
-    return this.users.find((user) => user.id === id);
-  }
-
-  getUsers(room: string) {
-    return this.rooms[room].users;
-  }
-
-  createMessage(message: MessageDto, clientId: string) {
-    const user: User = this.users.find((user) => {
-      return user.id === clientId;
-    });
-
-    const newMessage: Message = {
-      username: user.name,
-      text: message.text,
-    };
-
-    this.rooms[message.room].messages.push(newMessage);
-
-    return newMessage;
   }
 
   switchRoom(clientId: string, payload) {
@@ -73,5 +58,44 @@ export class MessagesService {
     this.rooms[payload.newRoom].users.push(user);
 
     this.rooms[payload.currentRoom].users = currentRoomUsers;
+  }
+
+  leaveRoom(clientId: string, room: string) {
+    const allUsers: User[] = [];
+
+    this.users.forEach((user) => {
+      if (user.id !== clientId) {
+        allUsers.push(user);
+      }
+    });
+
+    this.users = allUsers;
+
+    const roomUsers: User[] = [];
+
+    this.rooms[room].users.forEach((user) => {
+      if (user.id !== clientId) {
+        roomUsers.push(user);
+      }
+    });
+
+    this.rooms[room].users = roomUsers;
+
+    return this.rooms[room].users;
+  }
+
+  createMessage(message: MessageDto, clientId: string) {
+    const user: User = this.users.find((user) => {
+      return user.id === clientId;
+    });
+
+    const newMessage: Message = {
+      username: user.name,
+      text: message.text,
+    };
+
+    this.rooms[message.room].messages.push(newMessage);
+
+    return newMessage;
   }
 }

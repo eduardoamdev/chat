@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useContext } from "react";
+import { Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { SocketContext } from "../context/socket";
 import { rooms } from "../resources/rooms";
@@ -7,6 +8,8 @@ import { RoomInfo } from "../interfaces/Room";
 
 const Room = () => {
   const socket = useContext(SocketContext);
+
+  const allRooms: RoomInfo[] = rooms;
 
   let [username, setUsername] = useState({
     username: "",
@@ -16,7 +19,9 @@ const Room = () => {
     room: useParams().id,
   });
 
-  const allRooms: RoomInfo[] = rooms;
+  let [leave, setLeave] = useState({
+    leave: false,
+  });
 
   let [message, setMessage] = useState({
     content: "",
@@ -52,6 +57,13 @@ const Room = () => {
     });
   };
 
+  const handleLeaveRoom = () => {
+    socket.emit("leaveRoom", { room: room.room });
+    setLeave({
+      leave: true,
+    });
+  };
+
   const switchRoom = (newRoom: string) => {
     socket.emit("switchRoom", { currentRoom: room.room, newRoom }, () => {
       setRoom({
@@ -62,10 +74,13 @@ const Room = () => {
 
   useEffect(() => {
     getUsername();
+
     socket.emit("getUsers", room.room);
+
     socket.on("users", (users: any) => {
       console.log(users);
     });
+
     socket.on("newMessage", (newMessage: any) => {
       console.log(newMessage);
     });
@@ -73,38 +88,45 @@ const Room = () => {
 
   return (
     <div>
-      <div>
+      {leave.leave === true ? (
+        <Navigate to={`/`} />
+      ) : (
         <div>
-          <h1>
-            Hi {username.username}. Welcome to {room.room}
-          </h1>
-          <span>
-            Type your message:
-            <input onChange={handleInput} value={message.content} />
-          </span>
-          <button onClick={handleSubmit}>Send</button>
+          <div>
+            <div>
+              <h1>
+                Hi {username.username}. Welcome to {room.room}
+              </h1>
+              <span>
+                Type your message:
+                <input onChange={handleInput} value={message.content} />
+              </span>
+              <button onClick={handleSubmit}>Send</button>
+            </div>
+            <div>
+              <ul>
+                {allRooms.map((roomElement: RoomInfo) => {
+                  if (roomElement.name !== room.room) {
+                    return (
+                      <div
+                        key={roomElement.name}
+                        onClick={() => {
+                          switchRoom(roomElement.name);
+                        }}
+                      >
+                        {roomElement.name}
+                      </div>
+                    );
+                  } else {
+                    return <div key={roomElement.name}></div>;
+                  }
+                })}
+              </ul>
+            </div>
+            <button onClick={handleLeaveRoom}>Disconnect</button>
+          </div>
         </div>
-        <div>
-          <ul>
-            {allRooms.map((roomElement: RoomInfo) => {
-              if (roomElement.name !== room.room) {
-                return (
-                  <div
-                    key={roomElement.name}
-                    onClick={() => {
-                      switchRoom(roomElement.name);
-                    }}
-                  >
-                    {roomElement.name}
-                  </div>
-                );
-              } else {
-                return <div key={roomElement.name}></div>;
-              }
-            })}
-          </ul>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

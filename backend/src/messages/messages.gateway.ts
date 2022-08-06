@@ -21,6 +21,18 @@ export class MessagesGateway {
 
   constructor(private readonly messagesService: MessagesService) {}
 
+  @SubscribeMessage("getUsers")
+  getUsers(@MessageBody() room: string) {
+    const users: User[] = this.messagesService.getUsers(room);
+
+    this.server.to(room).emit("users", users);
+  }
+
+  @SubscribeMessage("getUsername")
+  getUsername(@ConnectedSocket() client: Socket) {
+    return this.messagesService.getUsername(client.id);
+  }
+
   @SubscribeMessage("joinRoom")
   joinRoom(
     @MessageBody("name") name: string,
@@ -29,31 +41,9 @@ export class MessagesGateway {
   ) {
     client.join(room);
 
-    this.messagesService.identifyUser(client.id, name, room);
+    this.messagesService.joinRoom(client.id, name, room);
 
     return { success: true };
-  }
-
-  @SubscribeMessage("getUsername")
-  getUsername(@ConnectedSocket() client: Socket) {
-    return this.messagesService.getUsername(client.id);
-  }
-
-  @SubscribeMessage("getUsers")
-  getUsers(@MessageBody() room: string) {
-    const users: User[] = this.messagesService.getUsers(room);
-
-    this.server.to(room).emit("users", users);
-  }
-
-  @SubscribeMessage("createMessage")
-  createMessage(
-    @MessageBody() message: MessageDto,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const newMessage = this.messagesService.createMessage(message, client.id);
-
-    this.server.to(message.room).emit("newMessage", newMessage);
   }
 
   @SubscribeMessage("switchRoom")
@@ -69,5 +59,27 @@ export class MessagesGateway {
     this.server.to(payload.newRoom).emit("users", users);
 
     return { success: true };
+  }
+
+  @SubscribeMessage("leaveRoom")
+  leaveRoom(
+    @MessageBody() room: { room: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const users = this.messagesService.leaveRoom(client.id, room.room);
+
+    this.server.to(room.room).emit("users", users);
+
+    client.leave(room.room);
+  }
+
+  @SubscribeMessage("createMessage")
+  createMessage(
+    @MessageBody() message: MessageDto,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const newMessage = this.messagesService.createMessage(message, client.id);
+
+    this.server.to(message.room).emit("newMessage", newMessage);
   }
 }
