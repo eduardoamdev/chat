@@ -8,13 +8,27 @@ import { RoomInfo } from "../interfaces/Room";
 const Room = () => {
   const socket = useContext(SocketContext);
 
-  const room = useParams().id;
+  let [username, setUsername] = useState({
+    username: "",
+  });
+
+  let [room, setRoom] = useState({
+    room: useParams().id,
+  });
 
   const allRooms: RoomInfo[] = rooms;
 
   let [message, setMessage] = useState({
     content: "",
   });
+
+  const getUsername = () => {
+    socket.emit("getUsername", {}, (response: any) => {
+      setUsername({
+        username: response.name,
+      });
+    });
+  };
 
   const handleInput = (event: any) => {
     setMessage({
@@ -23,19 +37,32 @@ const Room = () => {
   };
 
   const handleSubmit = () => {
-    socket.emit("createMessage", { text: message.content, room }, () => {
-      setMessage({
-        content: "",
+    socket.emit(
+      "createMessage",
+      { text: message.content, room: room.room },
+      () => {
+        setMessage({
+          content: "",
+        });
+      }
+    );
+
+    setMessage({
+      content: "",
+    });
+  };
+
+  const switchRoom = (newRoom: string) => {
+    socket.emit("switchRoom", { currentRoom: room.room, newRoom }, () => {
+      setRoom({
+        room: newRoom,
       });
     });
   };
 
-  const switchRoom = () => {
-    console.log("Switch room");
-  };
-
   useEffect(() => {
-    socket.emit("users", room);
+    getUsername();
+    socket.emit("getUsers", room.room);
     socket.on("users", (users: any) => {
       console.log(users);
     });
@@ -45,10 +72,12 @@ const Room = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <div>
         <div>
-          <h1>Welcome to {useParams().id}</h1>
+          <h1>
+            Hi {username.username}. Welcome to {room.room}
+          </h1>
           <span>
             Type your message:
             <input onChange={handleInput} value={message.content} />
@@ -58,9 +87,14 @@ const Room = () => {
         <div>
           <ul>
             {allRooms.map((roomElement: RoomInfo) => {
-              if (roomElement.name !== room) {
+              if (roomElement.name !== room.room) {
                 return (
-                  <div key={roomElement.name} onClick={switchRoom}>
+                  <div
+                    key={roomElement.name}
+                    onClick={() => {
+                      switchRoom(roomElement.name);
+                    }}
+                  >
                     {roomElement.name}
                   </div>
                 );
@@ -71,7 +105,7 @@ const Room = () => {
           </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

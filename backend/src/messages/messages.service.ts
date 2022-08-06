@@ -34,7 +34,11 @@ export class MessagesService {
     this.rooms[room].users.push(newUser);
   }
 
-  getUsers(room) {
+  getUsername(id) {
+    return this.users.find((user) => user.id === id);
+  }
+
+  getUsers(room: string) {
     return this.rooms[room].users;
   }
 
@@ -53,12 +57,12 @@ export class MessagesService {
     return newMessage;
   }
 
-  switchRoom(clientId: string, currentRoom: string, newRoom: string) {
+  switchRoom(clientId: string, payload) {
     const currentRoomUsers: User[] = [];
 
     let user: User;
 
-    this.rooms[currentRoom].users.forEach((roomUser) => {
+    this.rooms[payload.currentRoom].users.forEach((roomUser) => {
       if (roomUser.id !== clientId) {
         currentRoomUsers.push(roomUser);
       } else {
@@ -66,8 +70,8 @@ export class MessagesService {
       }
     });
 
-    this.rooms[newRoom].users.push(user);
+    this.rooms[payload.newRoom].users.push(user);
 
-    this.rooms[currentRoom].users = currentRoomUsers;
+    this.rooms[payload.currentRoom].users = currentRoomUsers;
   }
 }

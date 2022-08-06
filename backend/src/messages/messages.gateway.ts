@@ -34,7 +34,12 @@ export class MessagesGateway {
     return { success: true };
   }
 
-  @SubscribeMessage("users")
+  @SubscribeMessage("getUsername")
+  getUsername(@ConnectedSocket() client: Socket) {
+    return this.messagesService.getUsername(client.id);
+  }
+
+  @SubscribeMessage("getUsers")
   getUsers(@MessageBody() room: string) {
     const users: User[] = this.messagesService.getUsers(room);
 
@@ -42,7 +47,7 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage("createMessage")
-  create(
+  createMessage(
     @MessageBody() message: MessageDto,
     @ConnectedSocket() client: Socket,
   ) {
@@ -52,14 +57,17 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage("switchRoom")
-  switchRoom(
-    @MessageBody() currentRoom: string,
-    @MessageBody() newRoom: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.messagesService.switchRoom(client.id, currentRoom, newRoom);
+  switchRoom(@MessageBody() payload, @ConnectedSocket() client: Socket) {
+    this.messagesService.switchRoom(client.id, payload);
 
-    client.leave(currentRoom);
-    client.join(newRoom);
+    client.leave(payload.currentRoom);
+
+    client.join(payload.newRoom);
+
+    const users: User[] = this.messagesService.getUsers(payload.newRoom);
+
+    this.server.to(payload.newRoom).emit("users", users);
+
+    return { success: true };
   }
 }

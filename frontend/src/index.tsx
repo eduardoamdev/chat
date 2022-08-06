@@ -2,7 +2,6 @@ import App from "./App";
 import * as ReactDOMClient from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import React from "react";
 
 const container: any = document.getElementById("root");
 
