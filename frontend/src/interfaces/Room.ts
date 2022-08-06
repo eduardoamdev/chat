@@ -1,3 +1,3 @@
-export interface Room {
+export interface RoomInfo {
   name: string;
 }

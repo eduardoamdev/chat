@@ -52,4 +52,22 @@ export class MessagesService {
 
     return newMessage;
   }
+
+  switchRoom(clientId: string, currentRoom: string, newRoom: string) {
+    const currentRoomUsers: User[] = [];
+
+    let user: User;
+
+    this.rooms[currentRoom].users.forEach((roomUser) => {
+      if (roomUser.id !== clientId) {
+        currentRoomUsers.push(roomUser);
+      } else {
+        user = roomUser;
+      }
+    });
+
+    this.rooms[newRoom].users.push(user);
+
+    this.rooms[currentRoom].users = currentRoomUsers;
+  }
 }

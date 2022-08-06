@@ -1,6 +1,6 @@
-import { Room } from "../interfaces/Room";
+import { RoomInfo } from "../interfaces/Room";
 
-export const rooms: Room[] = [
+export const rooms: RoomInfo[] = [
   {
     name: "travels",
   },

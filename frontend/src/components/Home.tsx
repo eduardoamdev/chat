@@ -3,11 +3,6 @@ import { Navigate } from "react-router-dom";
 import { SocketContext } from "../context/socket";
 import { rooms } from "../resources/rooms";
 
-interface SuccessInfoResponse {
-  success: boolean;
-  message: string;
-}
-
 const Home = () => {
   const socket = useContext(SocketContext);
 

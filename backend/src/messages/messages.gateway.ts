@@ -42,12 +42,24 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage("createMessage")
-  async create(
+  create(
     @MessageBody() message: MessageDto,
     @ConnectedSocket() client: Socket,
   ) {
     const newMessage = this.messagesService.createMessage(message, client.id);
 
     this.server.to(message.room).emit("newMessage", newMessage);
+  }
+
+  @SubscribeMessage("switchRoom")
+  switchRoom(
+    @MessageBody() currentRoom: string,
+    @MessageBody() newRoom: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.messagesService.switchRoom(client.id, currentRoom, newRoom);
+
+    client.leave(currentRoom);
+    client.join(newRoom);
   }
 }
