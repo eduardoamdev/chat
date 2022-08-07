@@ -7,9 +7,12 @@ import { MessageDto } from "./dtos/message.dto";
 export class MessagesService {
   users: User[];
   rooms;
+  messageCounter: string;
 
   constructor() {
     this.users = [];
+
+    this.messageCounter = "0";
 
     this.rooms = {
       travels: {
@@ -17,6 +20,18 @@ export class MessagesService {
         messages: [],
       },
       literature: {
+        users: [],
+        messages: [],
+      },
+      art: {
+        users: [],
+        messages: [],
+      },
+      politics: {
+        users: [],
+        messages: [],
+      },
+      economics: {
         users: [],
         messages: [],
       },
@@ -90,11 +105,18 @@ export class MessagesService {
     });
 
     const newMessage: Message = {
+      id: this.messageCounter,
       username: user.name,
       text: message.text,
     };
 
     this.rooms[message.room].messages.push(newMessage);
+
+    const newMessageCounterValue = (
+      parseInt(this.messageCounter) + 1
+    ).toString();
+
+    this.messageCounter = newMessageCounterValue;
 
     return newMessage;
   }

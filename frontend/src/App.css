@@ -1,38 +1,146 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 10px;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.bg-orange {
+  background: orange;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.bg-white {
+  background: white;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.bg-light-orange {
+  background: rgb(232, 175, 123);
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+.vh-55 {
+  height: 55vh;
+}
+
+.vh-20 {
+  height: 20vh;
+}
+
+.hp-95 {
+  height: 95%;
+}
+
+.hp-70 {
+  height: 70%;
+}
+
+.wp-50 {
+  width: 50%;
+}
+
+.wp-40 {
+  width: 40%;
+}
+
+.wp-30 {
+  width: 30%;
+}
+
+.wp-40 {
+  width: 40%;
+}
+
+.wp-100 {
+  width: 100%;
+}
+
+.fs-3 {
+  font-size: 3rem;
+}
+
+.fs-1-5 {
+  font-size: 1.5rem;
+}
+
+.fc-white {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.fc-red {
+  color: red;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.pt-12 {
+  padding-top: 12rem;
+}
+
+.pt-7 {
+  padding-top: 7rem;
+}
+
+.p-2-3 {
+  padding: 2rem 3rem;
+}
+
+.mb-3 {
+  margin-bottom: 3rem;
+}
+
+.ml-2 {
+  margin-left: 2rem;
+}
+
+.mb-2-5 {
+  margin-bottom: 2.5rem;
+}
+
+.mb-1-5 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.mr-1 {
+  margin-right: 1rem;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+.flex-space-between {
+  justify-content: space-between;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.ai-center {
+  align-items: center;
+}
+
+.border-5-pink {
+  border: 5px solid rgb(225, 97, 150);
+}
+
+.border-bottom-5-pink {
+  border-bottom: 5px solid rgb(225, 97, 150);
+}
+
+.li-style-none {
+  list-style-type: none;
+}
+
+.scroll {
+  overflow-y: scroll;
 }

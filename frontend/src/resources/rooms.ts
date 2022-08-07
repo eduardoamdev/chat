@@ -7,4 +7,13 @@ export const rooms: RoomInfo[] = [
   {
     name: "literature",
   },
+  {
+    name: "art",
+  },
+  {
+    name: "politics",
+  },
+  {
+    name: "economics",
+  },
 ];

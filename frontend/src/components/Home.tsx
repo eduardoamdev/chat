@@ -53,24 +53,28 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="vh-100 bg-orange">
       {joined.joined === true ? (
         <Navigate to={`/room/${room.room}`} />
       ) : (
-        <div>
-          <h1>Welcome to "El Chat de Terra"</h1>
-          <input onChange={handleInput} />
-          <select onChange={handleSelect}>
+        <div className="pt-12 d-flex flex-column ai-center">
+          <h1 className="fs-3 fc-white mb-3">Welcome to "El Chat de Terra"</h1>
+          <p className="fs-1-5 mb-1">Enter your username</p>
+          <input onChange={handleInput} className="fs-1-5 mb-1-5" />
+          <p className="fs-1-5 mb-1">Select a room</p>
+          <select onChange={handleSelect} className="fs-1-5 mb-2-5">
             {rooms.map((room) => {
               return (
-                <option key={room.name} value={room.name}>
+                <option key={room.name} value={room.name} className="fs-1-5">
                   {room.name}
                 </option>
               );
             })}
           </select>
-          <button onClick={handleSubmit}>Submit</button>
-          <h4>{message.message}</h4>
+          <button onClick={handleSubmit} className="fs-1-5 mb-2-5">
+            Submit
+          </button>
+          <p className="fs-1-5 fc-red">{message.message}</p>
         </div>
       )}
     </div>
