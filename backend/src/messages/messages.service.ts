@@ -118,6 +118,10 @@ export class MessagesService {
 
     this.messageCounter = newMessageCounterValue;
 
-    return newMessage;
+    return this.rooms[message.room].messages;
+  }
+
+  getMessages(room: string) {
+    return this.rooms[room].messages;
   }
 }

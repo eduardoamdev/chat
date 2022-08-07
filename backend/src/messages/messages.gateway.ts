@@ -78,8 +78,17 @@ export class MessagesGateway {
     @MessageBody() message: MessageDto,
     @ConnectedSocket() client: Socket,
   ) {
-    const newMessage = this.messagesService.createMessage(message, client.id);
+    const roomMessages = this.messagesService.createMessage(message, client.id);
 
-    this.server.to(message.room).emit("newMessage", newMessage);
+    this.server
+      .to(message.room)
+      .emit("newMessage", { room: message.room, messages: roomMessages });
+  }
+
+  @SubscribeMessage("getMessages")
+  getMessages(@MessageBody() room: string) {
+    const roomMessages = this.messagesService.getMessages(room);
+
+    this.server.to(room).emit("roomMessages", { room, roomMessages });
   }
 }

@@ -19,12 +19,9 @@ const Room = () => {
     users: [],
   });
 
-  let [messages, setMessages] = useState<any>({
-    messages: [],
-  });
-
   let [room, setRoom] = useState<any>({
     room: useParams().id,
+    messages: [],
   });
 
   let [leave, setLeave] = useState({
@@ -60,6 +57,7 @@ const Room = () => {
     socket.emit("switchRoom", { currentRoom: room.room, newRoom }, () => {
       setRoom({
         room: newRoom,
+        messages: [],
       });
     });
   };
@@ -73,19 +71,25 @@ const Room = () => {
 
     socket.emit("getUsers", room.room);
 
+    socket.emit("getMessages", room.room);
+
     socket.on("users", (users: any) => {
       setUsers({
         users,
       });
     });
 
-    socket.on("newMessage", (newMessage: any) => {
-      const roomMessages: any[] = messages.messages;
+    socket.on("roomMessages", (response: any) => {
+      setRoom({
+        room: response.room,
+        messages: response.roomMessages,
+      });
+    });
 
-      roomMessages.push(newMessage);
-
-      setMessages({
-        messages: roomMessages,
+    socket.on("newMessage", (response: any) => {
+      setRoom({
+        room: response.room,
+        messages: response.messages,
       });
     });
   }, []);
@@ -110,13 +114,12 @@ const Room = () => {
               <div className="vh-55 p-2-3 bg-white border-5-pink  wp-40">
                 <div className="hp-95 scroll">
                   <ul>
-                    {messages.messages.map(
+                    {room.messages.map(
                       (message: {
                         id: string;
                         username: string;
                         text: string;
                       }) => {
-                        console.log(messages);
                         return (
                           <li key={message.id} className="li-style-none mb-1">
                             <div>
